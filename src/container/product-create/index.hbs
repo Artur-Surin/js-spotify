@@ -1,0 +1,34 @@
+<main class="main">
+    <section>
+        <div class="box">
+            <a class="button click button--outline" href="/product-list">Список товарів</a>
+            <a class="button click" href="/product-create">Створити новий</a>
+        </div>
+        <h1 class="title">Створення товару</h1>
+        <div class="form">
+            <h1 class="form__title">Інформація про товар</h1>
+            <form method="POST" action="/product-create">
+
+                <div class="form__content">
+
+                    <div class="form__box">
+                        <div class="form__field">
+                            <label for="name" class="form__label">Назва товару</label>
+                            <input type="name" name="name" class="form__input">
+                        </div>
+                        <div class="form__field">
+                            <label for="price" class="form__label">Ціна</label>
+                            <input type="price" name="price" class="form__input">
+                        </div>
+                    </div>
+
+                    <div class="form__field">
+                        <label for="description" class="form__label">Короткий опис товару:</label>
+                        <input type="description" name="description" class="form__input">
+                    </div>
+                    <button class="form__button click">Створити товар</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
