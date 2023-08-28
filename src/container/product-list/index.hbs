@@ -1,0 +1,30 @@
+<main>
+    <section class="list">
+        <div class="list__header">
+            <h1 class="list__title">Список товарів</h1>
+            <a class="list__click" href="/product-create">Створити новий</a>
+        </div>
+        <div class="list__items">
+            {{#with data.products}}
+            {{#if isEmpty}}
+            <mark>Товари відсутні</mark>
+            {{else}}
+            {{#each list}}
+            <div class="list__item">
+                <div class="list__item__info">
+                    <img src="https://picsum.photos/150/150" alt="random img">
+                    <h2 class="list__item__title">{{name}}</h2>
+                    <p class="list__item__description">{{description}}</p>
+                    <p class="list__item__id">ID: {{id}}</p>
+                </div>
+                <div class="list__item__price">
+                    <div class="price">{{price}}$</div>
+                    <a href="/product-edit?id={{id}}" class="edit__link">Редагувати</a>
+                </div>
+            </div>
+            {{/each}}
+            {{/if}}
+            {{/with}}
+        </div>
+    </section>
+</main>
