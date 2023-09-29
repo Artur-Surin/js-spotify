@@ -5,551 +5,487 @@ const router = express.Router()
 
 // ================================================================
 
-class Product {
+class Track {
   static #list = []
 
-  static #count = 0
-
-  constructor(img, title, description, category, price, amount = 0, ) {
-    this.id = ++Product.#count
-    this.img = img
-    this.title = title
-    this.description = description
-    this.category = category
-    this.price = price
-    this.amount = amount
+  constructor(name, author, image) {
+    this.id = Math.floor(1000 + Math.random() * 9000)
+    this.name = name
+    this.author = author
+    this.image = image
   }
 
-  static add = (...data) => {
-    const newProduct = new Product(...data)
-
-    this.#list.push(newProduct)
+  static create(name, author, image) {
+    const newTrack = new Track(name, author, image)
+    this.#list.push(newTrack)
+    return newTrack
   }
+
+  static getList() {
+    return this.#list.reverse()
+  }
+}
+
+Track.create(
+  'Інь Ян',
+  'MONATIK і ROXOLANA',
+  'https://picsum.photos/100/100',
+)
+Track.create(
+  'Baila Comnigo (Remix)',
+  'Selena Gomes i Rauw Alejandro',
+  'https://picsum.photos/100/100',
+)
+Track.create(
+  'Shameless',
+  'Camila Cabello',
+  'https://picsum.photos/100/100',
+)
+Track.create(
+  '11 PM',
+  'MALUMA',
+  'https://picsum.photos/100/100',
+)
+Track.create(
+  'Інша любов',
+  'Enleo',
+  'https://picsum.photos/100/100',
+)
+
+//console.log(Track.getList())
+
+class PlayList {
+  static #list = []
+
+  constructor(name) {
+    this.id = Math.floor(1000 + Math.random() * 9000)
+    this.name = name
+    this.tracks = []
+    this.image = 'https://picsum.photos/100/100'
+  }
+
+  static create(name) {
+    const newPlayList = new PlayList(name)
+    this.#list.push(newPlayList)
+    return newPlayList
+  }
+
+  static getList() {
+    return this.#list.reverse()
+  }
+
+  static makeMix(playlist) {
+    const allTracks = Track.getList()
+
+    let randomTracks = allTracks
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3)
+
+    playlist.tracks.push(...randomTracks)
+  }
+
+  static getById(id) {
+    return (
+      PlayList.#list.find(
+        (playlist) => playlist.id === id,
+      ) || null
+    )
+  }
+
+  deleteTrackById(trackId) {
+    this.tracks = this.tracks.filter(
+      (track) => track.id !== trackId,
+    )
+  }
+
+  addTrack(trackId) {
+    const trackAdd = Track.getList().find(
+      (track) => track.id === trackId,
+    )
+    this.tracks.push(trackAdd)
+  }
+
+  static findListByValue(name) {
+    return this.#list.filter((playList) =>
+      playList.name
+        .toLowerCase()
+        .includes(name.toLowerCase()),
+    )
+  }
+}
+
+PlayList.makeMix(PlayList.create('Test'))
+PlayList.makeMix(PlayList.create('Test2'))
+PlayList.makeMix(PlayList.create('Test3'))
+PlayList.makeMix(PlayList.create('Test4'))
+
+
+
+class User {
+  static #list = []
+  constructor(email, login, password) {
+    this.email = email
+    this.login = login
+    this.password = password
+    this.id = new Date().getTime()
+  }
+
+
+  verifyPassword = (password) => this.password === password
+
+  static add = (user) => {
+    this.#list.push(user)
+  }
+
 
   static getList = () => {
     return this.#list
   }
 
   static getById = (id) => {
-    return this.#list.find((product) => product.id === id)
+    return this.#list.find((user) => user.id === id)
   }
 
-  static getRandomList = (id) => {
-    //Фільтруємо товари щоб вилучити той з яким порівнюємо id
-    const filterList = this.#list.filter(
-      (product) => product.id !== id,
+  static deleteById = (id) => {
+    const index = this.#list.findIndex(
+      (user) => user.id === id,
     )
-    //Відсортуємо за допомогою Math.random() та перемішаємо масив
-    const shuffledList = filterList.sort(
-      () => Math.random() - 0.5,
-    )
-    //Повертаємо перші 3 елементи з перемішаного масива
-    return shuffledList.slice(0, 3)
-  }
-}
-
-Product.add(
-  'https://picsum.photos/200/300',
-  `Комп'ютер Artline Gaming (X43v31)`,
-  `AMD Ryzen 5 3600 / Gigabyte B450M S2H / 16ГБ DDR4 / MSI GeForce RTX 3050 AERO 8G OC / SSD 480ГБ + HDD 1ТБ / 600W GPS-600A`,
-  [
-    { id: 1, text: 'Готовий до відправки' },
-    { id: 2, text: 'Топ продажів' },
-  ],
-  20000,
-  10,
-)
-Product.add(
-  'https://picsum.photos/200/300',
-  `Комп'ютер COBRA Advanced `,
-  `Комп'ютер COBRA Advanced (A55.16.H1S4.36.16983) AMD Ryzen 5 5500/ DDR4 16ГБ / HDD 1ТБ + SSD 480ГБ / nVidia GeForce RTX 3060 12ГБ`,
-  [
-    { id: 1, text: 'Готовий до відправки' },
-    { id: 2, text: 'Топ продажів' },
-  ],
-  40000,
-  10,
-)
-Product.add(
-  'https://picsum.photos/200/300',
-  `Комп'ютер ARTLINE Gaming X77 v39 `,
-  `Комп'ютер ARTLINE Gaming X77 v39 (X77v39) Intel Core i7-10700F / RAM 32ГБ / SSD 1ТБ / nVidia GeForce RTX 3070 8ГБ`,
-  [
-    { id: 1, text: 'Готовий до відправки' },
-    { id: 2, text: 'Топ продажів' },
-  ],
-  75000,
-  10,
-)
-Product.add(
-  'https://picsum.photos/200/300',
-  `Комп'ютер ARTLINE Gaming X37`,
-  `Комп'ютер ARTLINE Gaming X37 v41 (X37v41) Intel Core i5-10400F / RAM 16ГБ / SSD 1ТБ / nVidia GeForce RTX 3050 8ГБ`,
-  [
-    { id: 1, text: 'Готовий до відправки' },
-    { id: 2, text: 'Топ продажів' },
-  ],
-  45000,
-  10,
-)
-
-class Purchase {
-  static DELIVERY_PRICE = 150
-  static #BONUS_FACTOR = 0.1
-
-  static #count = 0
-  static #list = []
-
-  static #bonusAccount = new Map()
-
-  static getBonusBalance = (email) => {
-    return Purchase.#bonusAccount.get(email) || 0
-  }
-
-  static calcBonusAmount = (value) => {
-    return value * Purchase.#BONUS_FACTOR
-  }
-
-  static updateBonusBalance = (
-    email,
-    price,
-    bonusUse = 0,
-  ) => {
-    const amount = this.calcBonusAmount(price)
-    const currentBalance = Purchase.getBonusBalance(email)
-    const updatedBalace = currentBalance + amount - bonusUse
-
-    Purchase.#bonusAccount.set(email, updatedBalace)
-    console.log(email, updatedBalace)
-    return amount
-  }
-  constructor(data, product) {
-    this.id = ++Purchase.#count
-
-    this.firstname = data.firstname
-    this.lastname = data.lastname
-
-    this.phone = data.phone
-    this.email = data.email
-
-    this.comment = data.comment || null
-    this.bonus = data.bonus || 0
-
-    this.promocode = data.promocode || null
-
-    this.totalPrice = data.totalPrice
-    this.productPrice = data.productPrice
-    this.deliveryPrice = data.deliveryPrice
-    this.amount = data.amount
-    this.product = product
-  }
-
-  static add = (...arg) => {
-    const newPurchase = new Purchase(...arg)
-    this.#list.push(newPurchase)
-
-    return newPurchase
-  }
-
-  static getList = () => {
-    return Purchase.#list.reverse()   
-  }
-
-  static getById = (id) => {
-    return this.#list.find((item) => item.id === id)
-  }
-
-  static updateById = (id, data) => {
-    const purchase = Purchase.getById(id)
-
-    if (purchase) {
-      if (data.firstname) {
-        purchase.firstname = data.firstname
-      }
-      if (data.lastname) {
-        purchase.lastname = data.lastname
-      }
-      if (data.phone) {
-        purchase.phone = data.phone
-      }
-      if (data.email) {
-        purchase.email = data.email
-      }
+    if (index !== -1) {
+      this.#list.splice(index, 1)
       return true
     } else {
       return false
     }
   }
+
+  static updateById = (id, data) => {
+    const user = User.getById(id)
+
+    if (user) {
+      User.update(user, data)
+    }
+  }
+
+  static getList = () =>  this.#list
+ 
+  static getById = (id) => 
+    this.#list.find((user) => user.id === id)
+
+    static deleteById = (id) => {
+      const index = this.#list.findIndex(
+        (user) => user.id === id,
+        )
+
+        if(index !== -1) {
+          this.#list.splice(index, 1)
+          return true
+        } else {
+          return false
+        }
+    }
+    
+
+  static updateById = (id, data) => {
+    const user = this.getById(id)
+
+    if(user) {
+      this.update(user, data)
+
+
+      return true
+    } else {
+      return false
+    }
+  }
+
+
+  static update = (user, { email }) => {
+    if (email) {
+    }}
+  static update = (user, { email}) => {
+    if(email) {
+
+      user.email = email
+    }
+  }
 }
-
-class Promocode {
-  static #list = []
-
-  constructor(name, factor) {
-    this.name = name
-    this.factor = factor
-  }
-
-  static add = (name, factor) => {
-    const newPromoCode = new Promocode(name, factor)
-    Promocode.#list.push(newPromoCode)
-    return newPromoCode
-  }
-
-  static getByName = (name) => {
-    return this.#list.find((promo) => promo.name === name)
-  }
-
-  static calc = (promo, price) => {
-    return price * promo.factor
-  }
-}
-
-Promocode.add('SUMMER23', 0.9)
-Promocode.add('DISCOUNT50', 0.5)
-Promocode.add('SALE25', 0.75)
 
 
 // ================================================================
 
-// ================================================================
+// router.get Створює нам один ентпоїнт
 
 // ↙️ тут вводимо шлях (PATH) до сторінки
 router.get('/', function (req, res) {
   // res.render генерує нам HTML сторінку
 
+  const list = PlayList.getList()
+  console.log(list)
   // ↙️ cюди вводимо назву файлу з сontainer
-  res.render('purchase-index', {
+  res.render('spotify-index', {
     // вказуємо назву папки контейнера, в якій знаходяться наші стилі
-    style: 'purchase-index',
+    style: 'spotify-index',
 
     data: {
-      list: Product.getList(),
+      lib: list,
     },
   })
   // ↑↑ сюди вводимо JSON дані
 })
 
-// ================================================================
-router.get('/purchase-product', function (req, res) {
-  // res.render генерує нам HTML сторінку
-  const id = Number(req.query.id)
-  
-  // ↙️ cюди вводимо назву файлу з сontainer
-  res.render('purchase-product', {
-    // вказуємо назву папки контейнера, в якій знаходяться наші стилі
-    style: 'purchase-product',
-
-    data: {
-      list: Product.getRandomList(id),
-      product: Product.getById(id),
-    },
-  })
-  // ↑↑ сюди вводимо JSON дані
-})
 
 // ================================================================
-router.post('/purchase-create', function (req, res) {
-  // res.render генерує нам HTML сторінку
-  const id = Number(req.query.id)
-  const amount = Number(req.body.amount)
 
-  if(amount < 1) {
-    return res.render('alert', {
-      style: 'alert',
-      data: {
-        message: 'Помилка',
-        info: 'Некоректна квлькість товару',
-        link: `/purchase-product?id=${id}`,
-      },
-    })
-  }
-
-  const product = Product.getById(id);
-
-  if(product.amount < 1) {
-    return res.render('alert', {
-      style: 'alert',
-      data: {
-        message: 'Помилка',
-        info: 'Такої кількісті товару нема в наявності',
-        link: `/purchase-product?id=${id}`,
-      },
-    })
-  }
-  
-  console.log(product, amount)
-
-  const productPrice = product.price * amount
-  const totalPrice = productPrice + Purchase.DELIVERY_PRICE
-  const bonus = Purchase.calcBonusAmount(totalPrice)
-
-  res.render('purchase-create', {
-   
-    style: 'purchase-create',
-
-    data: {
-      id: product.id,
-
-      cart: [
-        {
-          text: `${product.title} (${amount})шт)`,
-          price: productPrice,
-        },
-        {
-          text: `Доставка`,
-          price: Purchase.DELIVERY_PRICE,
-        },
-      ],
-      totalPrice,
-      productPrice,
-      deliveryPrice: Purchase.DELIVERY_PRICE,
-      amount: amount,
-      bonus,
-    },
-  })
-})
-// ================================================================
-
-router.post('/purshase-submit', function (req, res) {
-  console.log(req.query)
-  console.log(req.body)
-
-  const id = Number(req.query.id)
-  let = {
-    firstname,
-    lastname,
-    phone,
-    email,
-    comment,
-
-    bonus,
-
-    totalPrice,
-    productPrice,
-    deliveryPrice,
-    amount,
-    promocode,
-  } = req.body
-
-  const product = Product.getById(id)
-
-  if (!product) {
-    return res.render('alert', {
-      style: 'alert',
-      title: 'Помилка',
-      info: 'Товар не знайдено',
-      href: `/purchase-product`,
-      textButton: 'Повернутись назад',
-    })
-  }
-
-  if (product.amount < amount) {
-    return res.render('alert', {
-      style: 'alert',
-      title: 'Помилка',
-      info: 'Товару немає в потрібній кількості',
-      href: `/purchase-edit`,
-      textButton: 'Повернутись назад',
-    })
-  }
-
-  totalPrice = Number(totalPrice)
-  productPrice = Number(productPrice)
-  deliveryPrice = Number(deliveryPrice)
-  amount = Number(amount)
-  bonus = Number(bonus)
-
-  if (
-    isNaN(totalPrice) ||
-    isNaN(productPrice) ||
-    isNaN(deliveryPrice) ||
-    isNaN(amount) ||
-    isNaN(bonus)
-  ) {
-    return res.render('alert', {
-      style: 'alert',
-      title: 'Помилка',
-      info: 'Некоректні дані',
-      href: `/purchase-product?id=${id}`,
-      textButton: 'Повернутись назад',
-    })
-  }
-
-  if (!firstname || !lastname || !phone || !email) {
-    return res.render('alert', {
-      style: 'alert',
-
-      title: "Заповніть обов'язкові поля",
-      info: 'Некоректні дані',
-      href: `/purchase-product?id=${id}`,
-      textButton: 'Повернутись назад',
-    })
-  }
-
-  if (bonus || bonus > 0) {
-    const bonusAmount = Purchase.getBonusBalance(email)
-
-    console.log(bonusAmount)
-
-    if (bonus > bonusAmount) {
-      bonus = bonusAmount
-    }
-
-    Purchase.updateBonusBalance(email, totalPrice, bonus)
-
-    totalPrice -= bonus
-  } else {
-    Purchase.updateBonusBalance(email, totalPrice, 0)
-  }
-
-  if (promocode) {
-    promocode = Promocode.getByName(promocode)
-    if (promocode) {
-      totalPrice = Promocode.calc(promocode, totalPrice)
-    }
-  }
-
-  if (totalPrice < 0) totalPrice = 0
-
-  const purchase = Purchase.add(
-    {
-      totalPrice,
-      productPrice,
-      deliveryPrice,
-      amount,
-      bonus,
-
-      firstname,
-      lastname,
-      phone,
-      email,
-      promocode,
-      comment,
-    },
-    product,
-  )
-  console.log(purchase)
-  res.render('alert', {
-    style: 'alert',
-    title: 'Успішно',
-    info: 'Замовлення створено',
-    href: `/purchase-list`,
-    textButton: 'Далі',
-  })
-})
-
-
-//=================================================================
+// router.get Створює нам один ентпоїнт
 
 // ↙️ тут вводимо шлях (PATH) до сторінки
-router.get('/alert', function (req, res) {
+router.get('/spotify-choose', function (req, res) {
   // res.render генерує нам HTML сторінку
 
+  const list = User.getList()
+
   // ↙️ cюди вводимо назву файлу з сontainer
-  res.render('alert', {
+  res.render('spotify-choose', {
     // вказуємо назву папки контейнера, в якій знаходяться наші стилі
-    style: 'alert',
+
+    style: 'spotify-choose',
+
+    data: {},
+
+    style: 'index',
+
+
 
     data: {
-      message: 'Операція успішна',
-      info: 'Товар створений',
-      link: '/test-path',
+      users: {
+        list,
+        isEmpty: list.length === 0,
+      },
     },
+
   })
   // ↑↑ сюди вводимо JSON дані
 })
 
 // ================================================================
-router.get('/purchase-list', function (req, res) {
-  const list = Purchase.getList()
 
-  // console.log('=========>', list)
 
-  res.render('purchase-list', {
-    style: 'purchase-list',
+router.get('/spotify-create', function (req, res) {
+  const isMix = !!req.query.isMix
+  res.render('spotify-create', {
+
+    style: 'spotify-create',
+
     data: {
-      list: list,
+      isMix,
     },
   })
 })
 
-// ================================================================
-router.post('/purchase-list', function (req, res) {
-  const id = Number(req.query.id)
-  const list = Purchase.getById(id)
 
-  // console.log('=========>', list, id)
+router.post('/spotify-create', function (req, res) {
+  const isMix = !!req.query.isMix
 
-  res.render('purchase-info', {
-    style: 'purchase-info',
-    data: {
-      list: list,
-    },
-  })
-})
+  const name = req.body.name
 
-// ================================================================
-router.post('/purchase-edit', function (req, res) {
-  const id = Number(req.query.id)
-  const list = Purchase.getById(id)
-
-  // console.log('=========>', list, id)
-
-  res.render('purchase-edit', {
-    style: 'purchase-edit',
-    data: {
-      list: list,
-    },
-  })
-})
-
-// ================================================================
-router.post('/purshase-success', function (req, res) {
-  const id = Number(req.query.id)
-  const list = req.body
-
-  const data = Purchase.updateByID(id, list)
-
-  // const updatedList = Purchase.getById(id)
-  // console.log('=========>', data, id, updatedList)
-
-  if (
-    list.firstname.length < 1 ||
-    list.lastname.length < 1 ||
-    list.email.length < 1 ||
-    list.phone.length < 1
-  ) {
+  if (!name) {
     return res.render('alert', {
       style: 'alert',
-      title: 'Помилка',
-      info: 'Поля не повинні бути пустими',
-      href: `/purchase-list`,
-      textButton: 'Повернутись назад',
+
+      data: { 
+        message: 'Помилка',
+        info: 'Введіть назву плейліста',
+        link: isMix 
+        ? '/spotify-create?isMix=true' 
+        : '/spotify-create',
+
+      },
     })
   }
 
-  if (!data) {
-    return res.render('alert', {
-      style: 'alert',
-      title: 'Помилка',
-      info: 'Не вдалося відредагувати данні',
-      href: `/purchase-list`,
-      textButton: 'Повернутись назад',
-    })
+  const playListNew = PlayList.create(name)
+
+  if (isMix) {
+    PlayList.makeMix(playListNew)
   }
+
+  console.log(playListNew)
 
   res.render('alert', {
     style: 'alert',
-    title: 'Успішне виконання дії',
-    info: 'Данні відредаговано',
-    href: `/purchase-list`,
-    textButton: 'Повернутись назад',
+
+    data: {
+      playlistId: playListNew.id,
+      tracks: playListNew.tracks,
+      name: 'test'
+    },
   })
 })
 
 
+router.get('/spotify-playlist', function (req, res) {
+  const id = Number(req.query.id)
+
+  const playlist = PlayList.getById(id)
+
+  if (!playlist) {
+    return res.render('alert', {
+      style: 'alert',
+
+      data: { 
+        message: 'Помилка',
+        info: 'Такого плейліста не знайдено',
+        link: '/spotify-choose' ,
+      },
+    })
+  }
+
+  res.render('spotify-playlist', {
+    style: 'spotify-playlist',
+
+    data: {
+      playlistId: playlist.id,
+      tracks: playlist.tracks,
+      name: playlist.name,
+    },
+  })
+})
+
+router.get('/spotify-track-delete', function (req, res) {
+  const playListId = Number(req.query.playListId)
+
+  const trackId = Number(req.query.trackId)
+
+  const playList = PlayList.getById(playListId)
+
+  if (!playList) {
+    return res.render('alert', {
+      style: 'alert',
+
+      data: {
+        message: 'Помилка',
+        info: 'Такого плейлиста не знайдено',
+        link: `/spotify-playlist?id=${playList.Id}`,
+      },
+    })
+  }
+
+  playList.deleteTrackById(trackId)
+
+  res.render('spotify-playlist', {
+    style: 'spotify-playlist',
+
+    data: {
+      playListId: playList.id,
+      tracks: playList.tracks,
+      name: playList.name,
+    },
+  })
+})
+
+router.get('/spotify-playlist-add', function (req, res) {
+  const playListId = Number(req.query.id)
+
+  const playlist = PlayList.getById(playListId)
+
+  if (!playlist) {
+    return res.render('alert', {
+      style: 'alert',
+
+      data: {
+        message: 'Помилка',
+        info: 'Такого плейлиста не знайдено',
+        link: `/spotify-playlist?id=${playListId}`,
+      },
+    })
+  }
+
+  res.render('spotify-playlist-add'), {
+    style: 'spotify-playlist-add',
+
+    data: {
+      playlistId: playlist.id,
+      tracks: Track.getList(),
+      name: playlist.name,
+    },
+  }
+})
+
 // ================================================================
+
+
+router.get('/spotify-track-add', function (req, res) {
+  const playListId = Number(req.query.playListId)
+
+  const trackId = Number(req.query.trackId)
+
+  const playList = Playlist.getById(playListId)
+
+  playList.addTrack(trackId)
+
+  if (!playList) {
+    return res.render('alert', {
+      style: 'alert',
+
+      data: {
+        message: 'Помилка',
+        info: 'Такого плейлиста не знайдено',
+        link: `/spotify-playlist?id=${playListId}`,
+      },
+    })
+  }
+
+  res.render('spotify-playlist', {
+    style: 'spotify-playlist',
+
+    data: {
+      playListId: playList.id,
+      tracks: playList.tracks,
+      name: playList.name,
+    },
+  })
+})
+
+
+
+router.get('/spotify-search', function (req, res) {
+  const value = ''
+
+  const list = PlayList.findListByValue(value)
+
+  res.render('spotify-search', {
+    style: 'spotify-search',
+
+    data: {
+      list: list.map(({ tracks, ...rest }) => ({
+        ...rest,
+        amount: tracks.length,
+      })),
+      value,
+    },
+  })
+})
+
+router.post('/spotify-search', function (req, res) {
+  const value = req.body.value || ''
+
+  const list = PlayList.findListByValue(value)
+
+  console.log(value)
+
+  res.render('spotify-search', {
+    style: 'spotify-search',
+
+    data: {
+      list: list.map(({ tracks, ...rest }) => ({
+        ...rest,
+        amount: tracks.length,
+      })),
+      value,
+    },
+  })
+})
+// ===============================================================
 
 // Підключаємо роутер до бек-енду
 module.exports = router
